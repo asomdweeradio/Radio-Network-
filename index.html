@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05080d">
+<meta name="description" content="ASOMDWEE RADIO NETWORK — Listen live to ASOMDWEE RADIO, ASETENAPA RADIO and NSROMA RADIO.">
+<title>ASOMDWEE RADIO NETWORK</title>
+<style>
+:root{--bg:#05080d;--card:#0c121a;--panel:#0c1725;--line:#1d334b;--gold:#d7a936;--muted:#8998aa}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#10263c 0,#05080d 42%);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
+.wrap{max-width:720px;margin:auto;padding:22px 16px 42px}.top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+.eyebrow{color:var(--gold);font-size:12px;font-weight:800;letter-spacing:1.6px}.title{font-size:40px;line-height:1.05;margin:6px 0 4px;font-weight:900}.sub{color:var(--muted);margin:0}
+.live{background:#121923;border:1px solid #263241;border-radius:18px;padding:8px 11px;font-size:11px;font-weight:900;letter-spacing:1px}.dot{display:inline-block;width:7px;height:7px;background:#ef4444;border-radius:50%;margin-right:6px}
+.hero{background:linear-gradient(145deg,#0c1725,#08111c);border:1px solid var(--line);border-radius:28px;padding:24px 18px;text-align:center;box-shadow:0 18px 45px #0007}.hero img{width:min(220px,65vw);height:170px;object-fit:contain}.ready{color:var(--gold);font-size:11px;font-weight:900;letter-spacing:1.7px}.hero h2{margin:7px 0 2px;font-size:27px}.tag{color:var(--muted);font-size:14px}
+button{border:0;cursor:pointer}.listen{margin-top:19px;background:var(--gold);color:#07111f;border-radius:32px;min-width:220px;padding:17px 25px;font-size:15px;font-weight:900}.listen:disabled{opacity:.65}.note{color:#718094;font-size:11px;margin-top:10px}
+h3{font-size:21px;margin:27px 0 4px}.hint{color:#77879a;font-size:12px;margin-bottom:12px}.list{display:grid;gap:10px}.station{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid #1a2531;border-radius:20px;padding:10px;text-align:left;width:100%;color:#fff}.station.active{background:#111b27;border-color:var(--gold)}.num{width:27px;height:27px;flex:0 0 27px;border-radius:50%;display:grid;place-items:center;background:#172230;color:#aab8c8;font-size:11px;font-weight:900}.station img{width:82px;height:70px;object-fit:contain;border-radius:12px;background:#fff}.info{flex:1}.name{font-size:15px;font-weight:850}.tagline{color:#7f8da0;font-size:11px;margin-top:4px}.status{color:var(--gold);font-size:9px;font-weight:900;letter-spacing:1.2px;margin-top:7px}.arrow{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#172230;font-size:24px}.active .arrow{background:var(--gold);color:#07111f}.footer{margin-top:18px;border:1px solid #182535;background:#09101a;border-radius:18px;padding:17px;text-align:center;color:#8392a5;font-size:11px;line-height:1.6}.footer strong{color:var(--gold);display:block;font-size:12px;letter-spacing:1px;margin-bottom:5px}
+.err{color:#ffb4b4;font-size:12px;margin-top:10px;display:none}
+@media(max-width:430px){.title{font-size:34px}.hero img{height:145px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="top">
+<div><div class="eyebrow">ASOMDWEE RADIO NETWORK</div><div class="title">Listen Live</div><p class="sub">Three stations. One simple link.</p></div>
+<div class="live"><span class="dot"></span>LIVE</div>
+</header>
+<section class="hero">
+<img id="heroLogo" src="assets/asomdwee.png" alt="ASOMDWEE RADIO logo">
+<div class="ready" id="state">READY TO LISTEN</div>
+<h2 id="heroName">ASOMDWEE RADIO</h2><div class="tag" id="heroTag">Asomdwee Nkoa</div>
+<button class="listen" id="listen">▶ &nbsp; LISTEN LIVE</button>
+<div class="note">Tap a station below to switch.</div><div class="err" id="err"></div>
+<audio id="audio" preload="none"></audio>
+</section>
+<h3>Choose a station</h3><div class="hint">Tap any station to select it, then press LISTEN LIVE.</div>
+<section class="list" id="list"></section>
+<div class="footer"><strong>ASOMDWEE RADIO NETWORK</strong>News • Music • Entertainment • Talk • Sports • Motivation • Preaching</div>
+</main>
+<script>
+const stations=[
+{id:"asomdwee",name:"ASOMDWEE RADIO",tag:"Asomdwee Nkoa",logo:"assets/asomdwee.png",url:"http://s37.myradiostream.com:8380/listen.mp3"},
+{id:"asetenapa",name:"ASETENAPA RADIO",tag:"Na Mu Ye",logo:"assets/asetenapa.png",url:"http://s19.myradiostream.com:17912/listen.mp3"},
+{id:"nsroma",name:"NSROMA RADIO",tag:"Nsroma Bi Apue",logo:"assets/nsroma.png",url:"http://s23.myradiostream.com:17566/listen.mp3"}
+];
+let selected=stations[0], playing=false;
+const audio=document.getElementById("audio"), listen=document.getElementById("listen"), list=document.getElementById("list"), err=document.getElementById("err");
+function render(){
+document.getElementById("heroLogo").src=selected.logo;document.getElementById("heroName").textContent=selected.name;document.getElementById("heroTag").textContent=selected.tag;
+list.innerHTML=stations.map((s,i)=>`<button class="station ${s.id===selected.id?"active":""}" data-id="${s.id}"><span class="num">${i+1}</span><img src="${s.logo}" alt=""><span class="info"><span class="name">${s.name}</span><span class="tagline">${s.tag}</span>${s.id===selected.id?`<span class="status">${playing?"ON AIR":"SELECTED"}</span>`:""}</span><span class="arrow">›</span></button>`).join("");
+document.querySelectorAll(".station").forEach(b=>b.onclick=()=>select(b.dataset.id));
+listen.textContent=playing?"Ⅱ  PAUSE LIVE":"▶  LISTEN LIVE";
+document.getElementById("state").textContent=playing?"NOW PLAYING":"READY TO LISTEN";
+}
+function select(id){selected=stations.find(s=>s.id===id);if(playing){start()}else render();}
+async function start(){
+err.style.display="none";audio.pause();audio.src=selected.url;audio.load();
+try{await audio.play();playing=true;render()}catch(e){playing=false;render();err.textContent="This stream could not start in this browser. If this happens on iPhone, the station should be upgraded/provided with an HTTPS stream.";err.style.display="block";}
+}
+listen.onclick=()=>{if(playing){audio.pause();playing=false;render()}else start()};
+audio.addEventListener("ended",()=>{playing=false;render()});audio.addEventListener("error",()=>{if(playing){playing=false;render();err.textContent="The station stream is temporarily unavailable.";err.style.display="block"}});
+render();
+</script>
+</body></html>
